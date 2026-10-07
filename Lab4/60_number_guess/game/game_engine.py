@@ -8,6 +8,11 @@ class GameEngine:
         self.height = height
         self.secret_number = random.randint(1, 100)
         self.attempts = 0
+
+        # Task 2: Possible range
+        self.min_possible = 1
+        self.max_possible = 100
+
         self.feedback_msg = "Enter a number between 1 and 100"
         self.feedback_color = (220, 220, 220)
         self.game_won = False
@@ -37,9 +42,14 @@ class GameEngine:
         self.input_box.clear()
 
         if guess < self.secret_number:
+            # Task 2: Narrow lower boundary
+            self.min_possible = max(self.min_possible, guess + 1)
+
             self.feedback_msg = f"TOO LOW! (Guess was {guess})"
             self.feedback_color = (80, 160, 240)
         elif guess > self.secret_number:
+            # Task 2: Narrow upper boundary
+            self.max_possible = min(self.max_possible, guess - 1)
             self.feedback_msg = f"TOO HIGH! (Guess was {guess})"
             self.feedback_color = (240, 100, 80)
         else:
@@ -79,6 +89,9 @@ class GameEngine:
 
         attempts_surf = self.font_medium.render(f"Attempts: {self.attempts}", True, (180, 185, 195))
         screen.blit(attempts_surf, (self.width // 2 - attempts_surf.get_width() // 2, 95))
+
+        range_surf = self.font_medium.render(f"Possible range: {self.min_possible} - {self.max_possible}", True, (180, 185, 195))
+        screen.blit(range_surf, (self.width // 2 - range_surf.get_width() // 2, 120))
         self.input_box.render(screen)
 
         pygame.draw.rect(screen, (50, 150, 80), self.submit_btn, border_radius=6)
