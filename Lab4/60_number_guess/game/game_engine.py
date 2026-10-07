@@ -25,6 +25,12 @@ class GameEngine:
 
         # BUG SYMPTOM:
         # Submitting an empty input box crashes the game immediately.
+        # Task 1: Prevent empty-input crash
+        if not self.input_box.text.strip():
+            self.feedback_msg = "Please enter a number."
+            self.feedback_color = (240, 200, 80)
+            return
+
         guess = int(self.input_box.text)
         
         self.attempts += 1
