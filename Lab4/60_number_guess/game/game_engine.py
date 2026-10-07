@@ -13,6 +13,10 @@ class GameEngine:
         self.min_possible = 1
         self.max_possible = 100
 
+        # Task 3: Recent guess history
+        self.guess_history = []
+        self.max_history = 5
+
         self.feedback_msg = "Enter a number between 1 and 100"
         self.feedback_color = (220, 220, 220)
         self.game_won = False
@@ -45,14 +49,26 @@ class GameEngine:
             # Task 2: Narrow lower boundary
             self.min_possible = max(self.min_possible, guess + 1)
 
+            # Task 3: Add guess to history
+            self.guess_history.append((guess, "TOO LOW"))
+            self.guess_history = self.guess_history[-self.max_history:]
+
             self.feedback_msg = f"TOO LOW! (Guess was {guess})"
             self.feedback_color = (80, 160, 240)
         elif guess > self.secret_number:
             # Task 2: Narrow upper boundary
             self.max_possible = min(self.max_possible, guess - 1)
+
+            # Task 3: Add guess to history
+            self.guess_history.append((guess, "TOO HIGH"))
+            self.guess_history = self.guess_history[-self.max_history:]
             self.feedback_msg = f"TOO HIGH! (Guess was {guess})"
             self.feedback_color = (240, 100, 80)
         else:
+            # Task 3: Add correct guess to history
+            self.guess_history.append((guess, "CORRECT"))
+            self.guess_history = self.guess_history[-self.max_history:]
+
             self.feedback_msg = f"CORRECT! Found in {self.attempts} attempts."
             self.feedback_color = (80, 220, 90)
             self.game_won = True
@@ -92,6 +108,14 @@ class GameEngine:
 
         range_surf = self.font_medium.render(f"Possible range: {self.min_possible} - {self.max_possible}", True, (180, 185, 195))
         screen.blit(range_surf, (self.width // 2 - range_surf.get_width() // 2, 120))
+
+        # Task 3: Display recent guess history
+        history_title = self.font_medium.render("Recent guesses:", True, (180, 185, 195))
+        screen.blit(history_title, (60, 240))
+        for i, (guess, result) in enumerate(self.guess_history):
+            history_text = self.font_medium.render(f"{guess}: {result}", True, (180, 185, 195))
+            screen.blit(history_text, (60, 275 + i * 32))
+
         self.input_box.render(screen)
 
         pygame.draw.rect(screen, (50, 150, 80), self.submit_btn, border_radius=6)
